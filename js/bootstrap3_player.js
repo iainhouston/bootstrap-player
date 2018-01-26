@@ -6,7 +6,7 @@
         song.controls = false;
 
         var player_box = document.createElement('div');
-        $(player_box).addClass($(song).attr('class') + ' well container-fluid playa');
+        $(player_box).addClass((typeof $(song).attr('class') !== 'undefined' ? $(song).attr('class') : '') + ' well container-fluid playa');
 
         var data_sec = document.createElement('section');
         $(data_sec).addClass('collapsing center-block row col-sm-12');
@@ -45,19 +45,21 @@
             $(play).attr('type','button');
             $(play).addClass('btn  btn-default disabled col-sm-1');
 
+            $(play).on('click', function () {
+                if (song.paused && !song.ended) {
+                    song.play();
+                } else {
+                    song.pause();
+                }
+            });
+
             play.setPlayState = function (toggle) {
                 $(play).removeClass('disabled');
                 if (toggle === 'play') {
                     $(play).html('<i class="glyphicon glyphicon-play"></i>');
-                    $(play).click(function () {
-                        song.play();
-                    });
                 }
                 if (!song.paused || toggle === 'pause') {
                     $(play).html('<i class="glyphicon glyphicon-pause"></i>');
-                    $(play).click(function () {
-                        song.pause();
-                    });
                 }
             }; // setPlayState
 
@@ -106,10 +108,10 @@
                 bg += ', rgba(223, 240, 216, 1) ' + ((song.currentTime / song.duration) * 100) + '%';
                 bg += ', rgba(223, 240, 216, 0) ' + ((song.currentTime / song.duration) * 100) + '%';
                 for (i = 0; i < song.buffered.length; i++) {
-                    if (song.buffered.end(i) > song.currentTime && 
-                        isNaN(song.buffered.end(i)) === false && 
+                    if (song.buffered.end(i) > song.currentTime &&
+                        isNaN(song.buffered.end(i)) === false &&
                         isNaN(song.buffered.start(i)) === false) {
-                        
+
                         if (song.buffered.end(i) < song.duration) {
                             bufferedend = ((song.buffered.end(i) / song.duration) * 100);
                         } else {
@@ -127,11 +129,11 @@
                     }
                 }
                 $(seek).css('background', '-webkit-linear-gradient(left, ' + bg + ')');
-                    //These may be re-enabled when/if other browsers support the background like webkit
-                    //$(seek).css('background','-o-linear-gradient(left,  ' + bg + ')');
-                    //$(seek).css('background','-moz-linear-gradient(left,  ' + bg + ')');
-                    //$(seek).css('background','-ms-linear-gradient(left,  ' + bg + ')');
-                    //$(seek).css('background','linear-gradient(to right,  ' + bg + ')');
+                //These may be re-enabled when/if other browsers support the background like webkit
+                //$(seek).css('background','-o-linear-gradient(left,  ' + bg + ')');
+                //$(seek).css('background','-moz-linear-gradient(left,  ' + bg + ')');
+                //$(seek).css('background','-ms-linear-gradient(left,  ' + bg + ')');
+                //$(seek).css('background','linear-gradient(to right,  ' + bg + ')');
                 $(seek).css('background-color', '#ddd');
             }; // seek.progress
 
@@ -324,9 +326,9 @@
         }; // addInfo
 
         var addData = function () {
-            // jslint will complain about our use of `typeof` but 
-            // it's the only way not to raise an error by referencing 
-            // a nnon-existent data-* variable 
+            // jslint will complain about our use of `typeof` but
+            // it's the only way not to raise an error by referencing
+            // a nnon-existent data-* variable
             if (typeof ($(song).data('infoAlbumArt')) !== 'undefined') {
                 addAlbumArt();
             }
